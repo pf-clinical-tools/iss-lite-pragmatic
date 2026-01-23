@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>ISS-Lite (Pragmatic) Trauma Severity Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+<!-- TOOL_MARKER_ISS_LITE_PRAGMATIC_V1_5_SPINE_SEPARATED_6_REGION_BEHAVIOUR_GOVERNANCE_TIGHT -->
+
+<style>
+  :root{
+    --bg:#f7f8fa;
+    --card:#ffffff;
+    --text:#111;
+    --muted:#555;
+    --border:#d0d7de;
+    --blue:#2f6fb0;
+    --red:#b42318;
+    --amber:#b36b00;
+    --green:#1b7f3a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--text);
+  }
+  .container{
+    max-width:900px;
+    margin:auto;
+    padding:16px;
+  }
+  h1{font-size:1.6em;margin:0 0 8px;}
+  p{margin:0 0 10px;line-height:1.45;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:14px;
+  }
+  label{font-weight:800; display:block;}
+  select{
+    width:100%;
+    padding:8px;
+    margin-top:6px;
+    font-size:1em;
+  }
+  .muted{color:var(--muted);font-size:0.9em;}
+  .result{
+    font-size:1.2em;
+    font-weight:900;
+    margin-top:8px;
+  }
+  .flag{
+    margin-top:8px;
+    padding:10px;
+    border-radius:8px;
+    font-weight:800;
+    border:1px solid transparent;
+  }
+  .green{background:#e7f4ec;color:var(--green);border-color:#bfe4ca;}
+  .amber{background:#fff4e5;color:var(--amber);border-color:#ffd8a8;}
+  .red{background:#fdecea;color:var(--red);border-color:#f5b5b0;}
+
+  details{
+    margin-top:10px;
+    border-top:1px dashed var(--border);
+    padding-top:10px;
+  }
+  summary{
+    cursor:pointer;
+    font-weight:800;
+    color:var(--blue);
+    list-style:none;
+    outline:none;
+  }
+  summary::-webkit-details-marker{display:none;}
+  .help{
+    margin-top:10px;
+    font-size:0.92em;
+    color:var(--text);
+  }
+  .help h3{font-size:1.02em;margin:10px 0 6px;}
+  .help ul{margin:6px 0 10px 18px;padding:0;}
+  .rule{
+    padding:10px;
+    border-left:4px solid var(--blue);
+    background:#eef5ff;
+    border-radius:8px;
+    margin-top:10px;
+  }
+  footer{
+    font-size:0.85em;
+    color:var(--muted);
+    margin-top:18px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>ISS-Lite (Pragmatic) Calculator</h1>
+  <p class="muted">
+    Bedside <strong>approximation</strong> of injury burden using simplified severity bands (0–5).
+    <br><strong>Not a substitute for formal AIS/ISS coding or trauma registry methodology.</strong>
+    <br><strong>Important:</strong> For usability, the spine is shown as separate cervical/thoracic/lumbar selections.
+    <br><strong>However, ISS-Lite still behaves as a 6-region system (not 9).</strong>
+  </p>
+
+  <!-- How spine is handled -->
+  <div class="card">
+    <details>
+      <summary>How spine is handled in ISS-Lite (read this)</summary>
+      <div class="help">
+        <p>
+          <strong>ISS-Lite still behaves like a 6-region system, not 9.</strong>
+          The additional spine dropdowns are provided for usability only.
+        </p>
+        <p>
+          <strong>Important governance note:</strong><br>
+          Spinal regions are separated for usability.
+          For ISS-Lite calculation, cervical spine is grouped with Head/Neck, and thoracic/lumbar spine are grouped with Extremities,
+          consistent with AIS regional principles. The highest severity within each grouped region is used.
+        </p>
+        <div class="rule">
+          <strong>Grouping rule used by the calculator:</strong>
+          <ul>
+            <li><strong>Head/Neck group</strong> = max(Head/Brain, Cervical spine)</li>
+            <li><strong>Extremities group</strong> = max(Extremities/Pelvic girdle, Thoracic spine, Lumbar spine)</li>
+          </ul>
+          All other regions (Face, Chest, Abdomen/Pelvic contents, External) are unchanged.
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 1. Head / Brain -->
+  <div class="card">
+    <label>Head / Brain</label>
+    <select class="region" data-key="headBrain" aria-label="Head / Brain severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Head/Brain? (0–5)</summary>
+      <div class="help">
+        <h3>0 – No injury</h3>
+        <ul><li>No traumatic intracranial injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Superficial scalp injury only; no intracranial injury.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li>Definite head injury without intracranial haemorrhage and without significant neurological risk.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul>
+          <li>Any intracranial haemorrhage (SDH/EDH/SAH/ICH) <strong>without</strong> mass effect or midline shift.</li>
+          <li>Injury requiring inpatient observation/active management.</li>
+        </ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li>Mass effect, significant cerebral oedema, SDH ≥10 mm, or midline shift ≥5 mm.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li>Herniation/brainstem compression or emergency neurosurgical decompression.</li></ul>
+
+        <div class="rule">
+          <strong>Tip:</strong> a “thin SDH” (e.g., 2–4 mm) with no shift is usually <strong>3</strong>.
+          <br><strong>Uncertainty rule:</strong> if unsure between two categories, choose the higher band or escalate.
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 2. Face -->
+  <div class="card">
+    <label>Face</label>
+    <select class="region" data-key="face" aria-label="Face severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Face? (0–5)</summary>
+      <div class="help">
+        <h3>0 – No injury</h3>
+        <ul><li>No facial injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Superficial facial injury; uncomplicated nasal fracture without displacement.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li>Uncomplicated facial fractures requiring routine care but no major threat.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li>Complex facial fractures requiring specialist input (e.g., operative planning) but no immediate airway threat.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li>Facial trauma with significant haemorrhage risk or high complexity, potential airway concern.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li>Airway threatened by facial trauma, or immediately life-threatening facial injury.</li></ul>
+
+        <div class="rule"><strong>Tip:</strong> if the dominant problem is airway/physiology, escalate — this tool does not capture physiology.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 3. Cervical Spine -->
+  <div class="card">
+    <label>Cervical Spine</label>
+    <select class="region" data-key="cSpine" aria-label="Cervical spine severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Cervical Spine? (0–5)</summary>
+      <div class="help">
+        <div class="rule">
+          <strong>Grouping note:</strong> For ISS-Lite calculation, Cervical spine is grouped with <strong>Head/Neck</strong>
+          and the higher of (Head/Brain, Cervical spine) is used.
+        </div>
+
+        <h3>0 – No injury</h3>
+        <ul><li>No cervical spine injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Minor soft-tissue injury only (e.g., uncomplicated neck strain).</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li><strong>Example:</strong> stable cervical vertebral fracture without neurological deficit.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li><strong>Example:</strong> unstable cervical fracture/ligamentous injury requiring specialist input/immobilisation, without imminent life-threatening compromise.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li><strong>Example:</strong> cervical injury with neurological deficit, significant canal compromise, or high risk of deterioration.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li><strong>Example:</strong> high cervical cord injury threatening ventilation or requiring immediate life-saving intervention.</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 4. Chest -->
+  <div class="card">
+    <label>Chest</label>
+    <select class="region" data-key="chest" aria-label="Chest severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Chest? (0–5)</summary>
+      <div class="help">
+        <h3>0 – No injury</h3>
+        <ul><li>No thoracic injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Bruising/superficial injury only; no rib fracture/pleural injury.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li>Single uncomplicated rib fracture; small contusion without respiratory compromise.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul>
+          <li>≥2 rib fractures with contusion; pneumothorax requiring observation or drainage.</li>
+          <li>Injury requiring inpatient care and active management.</li>
+        </ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li>Flail chest; massive haemothorax; pulmonary contusion with respiratory failure.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li>Immediately life-threatening thoracic injury (e.g., major thoracic vascular injury).</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 5. Thoracic Spine -->
+  <div class="card">
+    <label>Thoracic Spine</label>
+    <select class="region" data-key="tSpine" aria-label="Thoracic spine severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Thoracic Spine? (0–5)</summary>
+      <div class="help">
+        <div class="rule">
+          <strong>Grouping note:</strong> For ISS-Lite calculation, Thoracic spine is grouped with <strong>Extremities</strong>
+          and the highest of (Extremities, Thoracic spine, Lumbar spine) is used.
+        </div>
+
+        <h3>0 – No injury</h3>
+        <ul><li>No thoracic spine injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Minor soft-tissue injury only.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li><strong>Example:</strong> stable thoracic compression fracture without neurological deficit.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li><strong>Example:</strong> burst fracture or unstable injury requiring specialist input/brace/surgical planning, without severe neurological compromise.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li><strong>Example:</strong> thoracic injury with neurological deficit, significant canal compromise, or high risk of deterioration.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li><strong>Example:</strong> profound spinal neurological compromise requiring urgent intervention.</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 6. Abdomen / Pelvic Contents -->
+  <div class="card">
+    <label>Abdomen / Pelvic Contents</label>
+    <select class="region" data-key="abdomen" aria-label="Abdomen / Pelvic contents severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Abdomen/Pelvic Contents? (0–5)</summary>
+      <div class="help">
+        <h3>0 – No injury</h3>
+        <ul><li>No abdominal/pelvic visceral injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Abdominal wall bruising only; no visceral injury.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li>Definite injury but generally not life-threatening (e.g., minor stable solid-organ injury without concerning features).</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li>Solid organ injury without haemodynamic instability; pelvic bleeding requiring active management.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li>Major intra-abdominal haemorrhage; unstable pelvic injury with significant bleeding risk.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li>Exsanguinating abdominal/pelvic injury or imminent death without intervention.</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 7. Lumbar Spine -->
+  <div class="card">
+    <label>Lumbar Spine</label>
+    <select class="region" data-key="lSpine" aria-label="Lumbar spine severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Lumbar Spine? (0–5)</summary>
+      <div class="help">
+        <div class="rule">
+          <strong>Grouping note:</strong> For ISS-Lite calculation, Lumbar spine is grouped with <strong>Extremities</strong>
+          and the highest of (Extremities, Thoracic spine, Lumbar spine) is used.
+        </div>
+
+        <h3>0 – No injury</h3>
+        <ul><li>No lumbar spine injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Minor soft-tissue injury only.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li><strong>Example:</strong> stable lumbar compression fracture without neurological deficit.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li><strong>Example:</strong> unstable lumbar injury requiring specialist input/brace/surgical planning, without severe neurological compromise.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li><strong>Example:</strong> lumbar injury with neurological deficit, significant canal compromise, or high risk of deterioration.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li><strong>Example:</strong> cauda equina syndrome or profound neurological compromise requiring urgent intervention.</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 8. Extremities / Pelvic girdle -->
+  <div class="card">
+    <label>Extremities / Pelvic Girdle</label>
+    <select class="region" data-key="extremities" aria-label="Extremities / Pelvic girdle severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in Extremities/Pelvic Girdle? (0–5)</summary>
+      <div class="help">
+        <div class="rule">
+          <strong>Grouping note:</strong> For ISS-Lite calculation, Extremities is grouped with <strong>Thoracic/Lumbar spine</strong>
+          and the highest of (Extremities, Thoracic spine, Lumbar spine) is used.
+        </div>
+
+        <h3>0 – No injury</h3>
+        <ul><li>No extremity/pelvic girdle injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Sprain/bruise; superficial injury only.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li>Closed limb fracture not requiring urgent surgery; stable injuries with low immediate threat.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li>Hip fracture; femoral shaft fracture; open fracture without vascular compromise.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li>Limb-threatening injury; crush injury with compartment syndrome.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li>Traumatic amputation (especially with shock) or immediately limb-/life-threatening extremity injury.</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 9. External -->
+  <div class="card">
+    <label>External (Skin / Burns)</label>
+    <select class="region" data-key="external" aria-label="External severity">
+      <option value="0" selected>0 – No injury</option>
+      <option value="1">1 – Minor</option>
+      <option value="2">2 – Moderate</option>
+      <option value="3">3 – Serious</option>
+      <option value="4">4 – Severe</option>
+      <option value="5">5 – Critical</option>
+    </select>
+
+    <details>
+      <summary>What qualifies in External? (0–5)</summary>
+      <div class="help">
+        <h3>0 – No injury</h3>
+        <ul><li>No external injury.</li></ul>
+
+        <h3>1 – Minor</h3>
+        <ul><li>Superficial skin injury only (abrasions/contusions) with minimal clinical impact.</li></ul>
+
+        <h3>2 – Moderate</h3>
+        <ul><li>More extensive soft-tissue injury requiring treatment/monitoring but not typically life-threatening.</li></ul>
+
+        <h3>3 – Serious</h3>
+        <ul><li>Significant burns or soft-tissue injury requiring inpatient care.</li></ul>
+
+        <h3>4 – Severe</h3>
+        <ul><li>Extensive/deep burns with major systemic risk or substantial tissue loss.</li></ul>
+
+        <h3>5 – Critical</h3>
+        <ul><li>Life-threatening burns/soft-tissue injury with high risk of death without urgent critical care.</li></ul>
+
+        <div class="rule"><strong>Uncertainty rule:</strong> if unsure, choose the higher band or escalate.</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Output -->
+  <div class="card">
+    <div class="result" id="issResult">ISS-Lite: 0</div>
+    <div class="muted" id="topRegions"></div>
+    <div id="flagBox"></div>
+  </div>
+
+  <!-- In-tool references (minimal, transparent) -->
+  <div class="card">
+    <p class="muted">
+      <strong>Background references (for transparency):</strong><br>
+      1. Baker SP, O’Neill B, Haddon W, Long WB. The Injury Severity Score: a method for describing patients with multiple injuries and evaluating emergency care. <em>J Trauma</em>. 1974;14:187–196.<br>
+      2. Association for the Advancement of Automotive Medicine (AAAM). <em>Abbreviated Injury Scale (AIS) 2005 – Update 2008</em>. Barrington, IL: AAAM.<br>
+      3. National Major Trauma Registry (NMTR), UK. Injury inclusion criteria and coding methodology (current national specifications).
+    </p>
+  </div>
+
+  <!-- Governance-tight footer -->
+  <footer>
+    <p>
+      <strong>Important (read before use):</strong><br>
+      ISS-Lite is a <strong>pragmatic bedside guide only</strong>. It provides a simplified approximation of injury
+      burden using clinician-selected severity bands and <strong>does not constitute formal Injury Severity
+      Score (ISS) or Abbreviated Injury Scale (AIS) coding</strong>.
+    </p>
+
+    <p>
+      The output must <strong>not</strong> be used for trauma registry submission, audit reporting, contractual metrics,
+      or as a substitute for specialist clinical judgement. It does not incorporate physiology
+      (e.g. GCS, blood pressure, lactate), mechanism, frailty, age, anticoagulation, comorbidity,
+      or evolving clinical course.
+    </p>
+
+    <p class="muted">
+      Note: additional spine dropdowns improve usability, but ISS-Lite calculation still uses a <strong>6-region grouped model (not 9)</strong>.
+    </p>
+
+    <p>
+      © 2026 Dr Prabhath Fernando MBBS MD FRCP. Non-commercial educational and clinical decision-support use
+      is permitted with attribution. Commercial use or redistribution without permission is not permitted.
+    </p>
+
+    <p class="muted">
+      References are provided for transparency regarding AIS/ISS background methodology. This tool intentionally does
+      <strong>not</strong> claim validation against formal AIS/ISS coding or National Major Trauma Registry (NMTR) processes.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  const selects = document.querySelectorAll('.region');
+  const issResult = document.getElementById('issResult');
+  const flagBox = document.getElementById('flagBox');
+  const topRegions = document.getElementById('topRegions');
+
+  // Helper to read a dropdown value safely
+  function v(key){
+    const el = document.querySelector(`.region[data-key="${key}"]`);
+    return el ? parseInt(el.value, 10) : 0;
+  }
+
+  function max3SquaredSum(arr){
+    const sorted = [...arr].sort((a,b)=>b-b);
+    const top3 = sorted.slice(0,3);
+    return top3.reduce((sum, x)=>sum + x*x, 0);
+  }
+
+  function calculateISS() {
+    // --- Grouped 6-region behaviour (NOT 9) ---
+    // Head/Neck group uses max(Head/Brain, Cervical spine)
+    const headNeck = Math.max(v("headBrain"), v("cSpine"));
+
+    // Extremities group uses max(Extremities, Thoracic spine, Lumbar spine)
+    const extremities = Math.max(v("extremities"), v("tSpine"), v("lSpine"));
+
+    // Other regions are direct
+    const chest = v("chest");
+    const abdomen = v("abdomen");
+    const face = v("face");
+    const external = v("external");
+
+    // Compute ISS-Lite from top 3 of the 6 grouped regions
+    const regions = [
+      {name:"Head/Neck (max of Head/Brain + C-spine)", val: headNeck},
+      {name:"Face", val: face},
+      {name:"Chest", val: chest},
+      {name:"Abdomen/Pelvic contents", val: abdomen},
+      {name:"Extremities (max of Extremities + T/L spine)", val: extremities},
+      {name:"External", val: external}
+    ];
+
+    const sorted = [...regions].sort((a,b)=>b.val - a.val);
+    const top3 = sorted.slice(0,3);
+    const iss = top3.reduce((sum, r)=>sum + r.val*r.val, 0);
+
+    issResult.textContent = "ISS-Lite: " + iss;
+
+    const contrib = top3
+      .filter(r => r.val > 0)
+      .map(r => `${r.name} ${r.val} (→ ${r.val*r.val})`)
+      .join(" + ");
+
+    topRegions.textContent = contrib ? ("Top contributors (grouped 6-region model): " + contrib) : "";
+
+    flagBox.className = "flag";
+    if (iss >= 16) {
+      flagBox.textContent = "Likely MAJOR TRAUMA (ISS-Lite ≥16). If uncertain between categories, choose the higher band or escalate for formal review.";
+      flagBox.classList.add("red");
+    } else if (iss >= 9) {
+      flagBox.textContent = "Moderate injury burden (ISS-Lite 9–15). Consider escalation if clinical concerns or uncertainty in severity bands.";
+      flagBox.classList.add("amber");
+    } else {
+      flagBox.textContent = "Lower injury burden (ISS-Lite <9). Use clinical judgement; physiology, frailty, and anticoagulation are not captured.";
+      flagBox.classList.add("green");
+    }
+  }
+
+  selects.forEach(s => s.addEventListener('change', calculateISS));
+  calculateISS();
+</script>
+
+</body>
+</html>
