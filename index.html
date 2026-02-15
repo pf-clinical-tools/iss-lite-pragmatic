@@ -5,7 +5,7 @@
 <title>ISS-Lite — Pragmatic Bedside Approximation of Injury Severity</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-<!-- TOOL_MARKER_ISS_LITE_PRAGMATIC_V1_6_BEDSIDE_APPROXIMATION_5_BAND_RATIONALE_GOVERNANCE_TIGHT -->
+<!-- TOOL_MARKER_ISS_LITE_PRAGMATIC_V1_6_1_RESET_PATCH -->
 
 <style>
   :root{
@@ -393,7 +393,7 @@
         <h3>2 – Moderate</h3>
         <ul><li>Definite injury but generally not life-threatening (e.g., minor stable solid-organ injury without concerning features).</li></ul>
 
-        <h3>3 – Serious</h3        >
+        <h3>3 – Serious</h3>
         <ul><li>Solid organ injury without haemodynamic instability; pelvic bleeding requiring active management.</li></ul>
 
         <h3>4 – Severe</h3>
@@ -535,8 +535,14 @@
   <div class="card">
     <div class="result" id="issResult">ISS-Lite: 0</div>
     <div class="muted" id="topRegions"></div>
+
+    <button type="button" id="resetBtn" style="width:100%;padding:10px;margin-top:10px;font-weight:800;">
+      Reset all to 0
+    </button>
+
     <div id="flagBox"></div>
   </div>
+
 
   <!-- In-tool references (minimal, transparent) -->
   <div class="card">
@@ -585,6 +591,14 @@
   const issResult = document.getElementById('issResult');
   const flagBox = document.getElementById('flagBox');
   const topRegions = document.getElementById('topRegions');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function resetAll(){
+    selects.forEach(s => { s.value = "0"; });
+    calculateISS();
+  }
+
+  if (resetBtn) resetBtn.addEventListener('click', resetAll);
 
   // Helper to read a dropdown value safely
   function v(key){
